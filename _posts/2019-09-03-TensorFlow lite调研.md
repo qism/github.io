@@ -1,3 +1,19 @@
+---
+layout:     post
+title:      TensorFlow Lite调研
+subtitle:
+        - 简介
+        - 移动端SDK比较
+        - TensorFlow Lite应用  
+date:       2019-09-03
+author:     qism
+header-img: img/post-bg-coffee.jpeg
+catalog: true
+tags:    
+        - Tensorflow
+        - Deep Learing
+---
+
 # 一、TensorFlow Lite 简介
 
 TensorFlow Lite 是 Google I/O 2017大会上的推出的，是专门针对移动设备上可运行的深度网络模型简单版，目前还只是开发者预览版，未推出正式版。
