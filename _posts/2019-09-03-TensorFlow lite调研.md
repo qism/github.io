@@ -10,7 +10,7 @@ author:     qism
 header-img: img/post-bg-coffee.jpeg
 catalog: true
 tags:    
-        - Tensorflow
+        - TensorFlow Lite
         - Deep Learing
 ---
 
