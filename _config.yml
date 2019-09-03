@@ -103,3 +103,5 @@ friends: [
         href: "https://spaces.ac.cn/"
     }
 ]
+
+theme: jekyll-theme-slate
