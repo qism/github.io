@@ -1,10 +1,7 @@
 ---
 layout:     post
 title:      TensorFlow Lite调研
-subtitle:
-        - 简介
-        - 移动端SDK比较
-        - TensorFlow Lite应用  
+subtitle:   移动端最有前景的深度学习框架
 date:       2019-09-03
 author:     qism
 header-img: img/post-bg-coffee.jpeg
@@ -58,13 +55,13 @@ Step 2：利用freeze_graph工具生成frozen的graphdef文件。
 
 Step 3：利用toco工具，生成最终的TF Lite文件。
 
-参考：https://blog.csdn.net/sinat_34022298/article/details/81569769
+参考：[博客](https://blog.csdn.net/sinat_34022298/article/details/81569769)
 
 备注：网上大多数资料讲的都是这种通过bazel重新编译模型生成依赖方法，但看到一些开发者实践认为这种方法难度很大，建议尝试TensorFlow Lite官方的例子中的方法，也就是下面第二种方法。
 
 第二种：变量转成常量之后写入PB文件，谷歌提供方法快速实现变量转换成常量的方法。
 
-参考：https://www.jianshu.com/p/091415b114e2
+参考：[简书](https://www.jianshu.com/p/091415b114e2)
 
 实际开发时需要一些支持文件，已在Github找到，下载地址：libandroid_tensorflow_inference_java.jar、libtensorflow_inference.so。
 
@@ -107,13 +104,13 @@ Inception v3：图像识别模型，功能与Mobile Net类似，提供更高的�
 
 Smart Reply：一种设备上的会话模型，可以对流入的对话聊天消息进行一键式回复。第一方和第三方消息传递应用在Android Wear上使用此功能。
 
-参考：https://arxiv.org/pdf/1610.06918v1.pdf
+参考：[论文](https://arxiv.org/pdf/1610.06918v1.pdf)
 
 TensorFlow Mobile、TensorFlow Lite在移动端的解决方案并不完善（TF Mobile 的内存管理与 TF Lite 的 Operators 的缺失），在实践中可能需要更多的修正与完善。
 kika输入法是应用TensorFlow Lite实现将基于循环神经网络的深度学习模型应用到安卓版的手机输入法引擎中，在克服工程化问题的情况下大大提升了输入体验：不仅使基于上下文的词预测更加准确，同时还使得词纠错功能更加强大。
 可以参考这个案例中Android 移动端轻量化部署所遇到的工程化挑战极其解决方法，为后期实践做准备。
 
-算法和实践原文参考：https://baijiahao.baidu.com/s?id=1598247649132552549&wfr=spider&for=pc
+算法和实践原文参考：[文章](https://baijiahao.baidu.com/s?id=1598247649132552549&wfr=spider&for=pc)
 
 # 四、结语
 
