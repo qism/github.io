@@ -34,16 +34,23 @@ CNN可以实现并行，需要不断堆叠来获取全局信息。RNN和CNN的�
 
 在正式学习attention和transformer之前先了解一下encode-decoder框架，磨刀不误砍材工，相信我，非常有必要~ encode-decoder框架见下图：
 
-![Encoder - Decoder]('/img/encode-decoder.jpeg','
- Encoder_Decoder框架')
+![Encoder - Decoder](/img/encode-decoder.jpeg ''
+ Encoder_Decoder框架'')
 
 常用序列模型RNN用在encoder阶段，将一个句子（文章）编码成一个向量序列。
 
-![](http://latex.codecogs.com/gif.latex?seq:<x_1,x_2,x_3,...,x_n)
+![](http://latex.codecogs.com/gif.latex?seq:<x_1,x_2,x_3,...,x_n>)
 
-![](http://latex.codecogs.com/gif.latex?encoder : f(x_1,x_2,x_3,...,x_n) 
-![](http://latex.codecogs.com/gif.latex?encoder_output/decoder_input)
+
+![](http://latex.codecogs.com/gif.latex?encoder:f(x_1,x_2,x_3,...,x_n) 
+
+
+![](http://latex.codecogs.com/gif.latex?encoder\_output/decoder_input)
+
+
 ![](http://latex.codecogs.com/gif.latex?decoder_output:<y_1,y_2,y_3,...y_m>)
+
+
 ![](http://latex.codecogs.com/gif.latex?其中，y_i=g(encoder_output,y_1,y_2,...y_i-1)
 
 
