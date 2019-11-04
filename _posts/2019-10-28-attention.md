@@ -34,17 +34,18 @@ CNN可以实现并行，需要不断堆叠来获取全局信息。RNN和CNN的�
 
 在正式学习attention和transformer之前先了解一下encode-decoder框架，磨刀不误砍材工，相信我，非常有必要~ encode-decoder框架见下图：
 
-![Encoder - Decoder]('/img/encode-decoder.jpeg' ''
- Encoder_Decoder框架'')
+![Encoder - Decoder]('/img/encode-decoder.jpeg','
+ Encoder_Decoder框架')
 
 常用序列模型RNN用在encoder阶段，将一个句子（文章）编码成一个向量序列。
 
-(```)
-  seq: <x_1,x_2,x_3,...,x_n>   
-  encoder : f(x_1,x_2,x_3,...,x_n) = encoder_output/decoder_input
-  decoder_output:<y_1,y_2,y_3,...y_m>
-  其中，y_i = g(encoder_output,y_1,y_2,...y_i-1)
-(```)
+![](http://latex.codecogs.com/gif.latex?seq:<x_1,x_2,x_3,...,x_n)
+
+![](http://latex.codecogs.com/gif.latex?encoder : f(x_1,x_2,x_3,...,x_n) 
+![](http://latex.codecogs.com/gif.latex?encoder_output/decoder_input)
+![](http://latex.codecogs.com/gif.latex?decoder_output:<y_1,y_2,y_3,...y_m>)
+![](http://latex.codecogs.com/gif.latex?其中，y_i=g(encoder_output,y_1,y_2,...y_i-1)
+
 
 每个yi都依次这么产生，那么看起来就是整个系统根据输入句子Source生成了目标句子Target。
 
@@ -69,12 +70,11 @@ encoder_output是整个句子的中间序列，对decoder阶段的不同词输�
 source中每个单词的隐层状态与目标单词的前置token的隐层去一一匹配，通过一个F函数寻找对齐的可能性，这个对齐在机器翻译问题上是很好理解的。
 这个F函数在不同论文里可能会采取不同的方法，具体有哪些方法我后期找找
 
-![Encoder - Decoder-attention]('/img/encoder-decoder-attention.jpeg' ''
- 加入attention后的Encoder_Decoder框架'')
+![Encoder - Decoder-attention]('/img/encoder-decoder-attention.jpeg','加入attention后的Encoder_Decoder框架')
 
 
-![attention]('/img/attention.jpeg' ''
- attention机制'')
+![attention]('/img/attention.jpeg','
+ attention机制')
 
 attention无序，加上position embedding,
 seq2seq的输出attention是单向的
