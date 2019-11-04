@@ -1,0 +1,10 @@
+
+ijavascript:S25894"LRefactor this code so that this expression does not always evaluate to true.(Ÿ¿Ã½
+Jjavascript:EmptyBlockã")Either remove or fill this block of code.(ô÷‹`
+njavascript:S2589Ò4"LRefactor this code so that this expression does not always evaluate to true.(’ü¯İùÿÿÿÿ
+njavascript:S2589Å"LRefactor this code so that this expression does not always evaluate to true.(—¹ùÿÿÿÿ
+Mjavascript:S1264¹"+Replace this "for" loop with a "while" loop(ÒöÁşøÿÿÿÿ
+ljavascript:S3403Ò4"JRemove this "!==" check; it will always be true. Did you mean to use "!="?(’ü¯İùÿÿÿÿ
+Kjavascript:EmptyBlockŠ")Either remove or fill this block of code.(çÛ£ï
+Hjavascript:S1264Á"+Replace this "for" loop with a "while" loop(ï¾Ü
+Yjavascript:S1854¦"7Remove this useless assignment to local variable "name"(ÅàÉ¿ıÿÿÿÿ
