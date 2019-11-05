@@ -51,56 +51,111 @@ CNN可以实现并行，需要不断堆叠来获取全局信息。RNN和CNN的�
 ![](http://latex.codecogs.com/gif.latex?decoder\_output:<y_1,y_2,y_3,...y_m>)
 
 
-![](http://latex.codecogs.com/gif.latex?y_i=g(encoder\_output,y_1,y_2,...y_i-1)
+![](http://latex.codecogs.com/gif.latex?y_i=g(encoder\_output,y_1,y_2,...y_i-1))
 
+*这部分详细内容可以参考张博士的博客*
 
-每个yi都依次这么产生，那么看起来就是整个系统根据输入句子Source生成了目标句子Target。
+以翻译任务为例，输入英文source：「Tom loves Jimmy」,输出target：「汤姆爱慕吉米」。encoder阶段编码整个source，例如用RNN将seq编码成一个中间语义序列c，decoder阶段逐个解码target的每个yi，每次解码的输入是c和前一个token的解码结果，即y_i-1。如果y_i是第一个字符，则decoder输出是c和一个起始符。
 
-在nlp领域，Encoder-Decoder的应用领域相当广泛。将该框架简单描述为由一个句子去生成另一个句子（机器翻译问题，对话问题等），或者由一个句子去生成一篇文章（文章生成问题等），或者由一篇文章去生成一个句子（文章摘要问题等）等。
+上述任务看起来就是***整个系统根据输入句子Source生成了目标句子Target***，这就是一个典型的encode-decoder框架的应用。
 
-
-Encoder-Decoder框架不仅仅在文本领域广泛使用，在语音识别、图像处理等领域也经常使用。比如对于语音识别来说，图2所示的框架完全适用，区别无非是Encoder部分的输入是语音流，输出是对应的文本信息；而对于“图像描述”任务来说，Encoder部分的输入是一副图片，Decoder的输出是能够描述图片语义内容的一句描述语。一般而言，文本处理和语音识别的Encoder部分通常采用RNN模型，图像处理的Encoder一般采用CNN模型。
-
-attention是一种通用的思想，可以独立于任何框架，但是现阶段大多attention机制都是依附于Encoder-Decoder框架。
+在nlp领域，Encoder-Decoder的应用领域相当广泛。将该框架简单描述为由一个句子去生成另一个句子（机器翻译问题，对话问题等），或者由一个句子去生成一篇文章（文章生成问题等），或者由一篇文章去生成一个句子（文章摘要问题等）等。Encoder-Decoder框架也可用在语音和图像领域，比如语音识别，Encoder部分的输入是语音流，输出是对应的文本信息；对「图像描述」任务，Encoder部分的输入是图片，Decoder的输出是能够描述图片语义内容的一句描述语。一般而言，文本处理和语音识别的Encoder部分通常采用RNN模型，图像处理的Encoder一般采用CNN模型。
 
 *******************************************************
 
 # 三、Attention
 
-encoder_output是整个句子的中间序列，对decoder阶段的不同词输出的作用应该是不一样的，这是理解attention的关键
+## 从「翻译任务对齐」理解attetion
 
-在Encoder-Decoder框架上添加attention
+Attention（注意力机制）其实是一种通用的思想，可以独立于任何框架，但是现阶段大多attention机制都是依附于Encoder-Decoder框架。Encoder-Decoder上一节已经讲过了。
 
-在encoder每个单词时候添加权重
-然后再用对各个单词的编码进行加权求和，为每一个输出单词的中间语义表现C，那么我们怎么知道这个权重呢？
+首先来看上面这个翻译任务：输入英文source：「Tom loves Jimmy」,输出target：「汤姆爱慕吉米」。传统的Encoder-Decoder框架，在decoder阶段的一个输入前置token，另一个输入是固定的，为整个source的编码语义表示（encoder_output）,但是，对于预测不同target中的y_i的重要性是不一样的，例如要decoder「汤姆」，明显「Tom」的重要性应该更大些，换句话说，翻译时候能够体现***token『对齐』***。
 
-source中每个单词的隐层状态与目标单词的前置token的隐层去一一匹配，通过一个F函数寻找对齐的可能性，这个对齐在机器翻译问题上是很好理解的。
-这个F函数在不同论文里可能会采取不同的方法，具体有哪些方法我后期找找
+***这个很直观，source的中间语义（encoder_output）在不同的decoder阶段应该不一样，体现不同token的重要性，这就是理解attention的关键了~~***
+
+在Encoder-Decoder框架上添加attention，也就是下面这张图：
 
 ![Encoder - Decoder-attention](/img/encoder-decoder-attention.jpeg ''加入attention后的Encoder_Decoder框架'')
 
+--------------------------------
+
+于是乎，decoder阶段就变成了下面这样的形式：
+
+![](http://latex.codecogs.com/gif.latex?y_1=g(c_1))
+
+![](http://latex.codecogs.com/gif.latex?y_2=g(c_2,y_1))
+
+![](http://latex.codecogs.com/gif.latex?y_i=g(c_i,y_i-1))
+
+***那么![](http://latex.codecogs.com/gif.latex?c_i)怎么来？***
+
+常用的方法就是对每个token的隐状态进行加权求和，得到![](http://latex.codecogs.com/gif.latex?c_i)
+
+对于上述翻译任务，就有下面这样3个c:
+
+![](http://latex.codecogs.com/gif.latex?c_汤姆=a_(汤姆,Tom)f(h_Tom)+ a_(汤姆,loves)f(h_loves) + a_(汤姆,Jimmy)f(h_Jimmy) )
+
+![](http://latex.codecogs.com/gif.latex?c_爱慕=a_(爱慕,Tom)f(h_Tom)+ a_(爱慕,loves)f(h_loves) + a_(爱慕,Jimmy)f(h_Jimmy) )
+
+![](http://latex.codecogs.com/gif.latex?c_吉米=a_(吉米,Tom)f(h_Tom)+ a_(吉米,loves)f(h_loves) + a_(吉米,Jimmy)f(h_Jimmy) )
+
+也就是
+
+![](http://latex.codecogs.com/gif.latex?c_i=\sum_{j=1}^seq_len
+a_{ij}h_j)
+
+
+source中每个单词的隐层状态与目标单词的前置token的隐层去一一匹配，通过一个F函数寻找对齐的可能性，这个对齐在机器翻译问题上是很好理解的。
+
+
+***那么问题来了，我们怎么知道这个权重呢？***
+
+
+以下引用张博士的博客内容：**假设编码和解码端都使用RNN,可以用Target输出句子i-1时刻的隐层节点状态去一一和输入句子Source中每个单词对应的RNN隐层节点状态hj进行对比，即通过函数![](http://latex.codecogs.com/gif.latex?F(h_j,H_{i-1}) H_{i-1}为target中前置token的隐状态)来获得目标单词和每个输入单词对应的对齐可能性，这个F函数在不同论文里可能会采取不同的方法，然后函数F的输出经过Softmax进行归一化就得到了符合概率分布取值区间的注意力分配概率分布数值。**
+
+这个F函数在不同论文里可能会采取不同的方法，我常用的方法就是除以key的维度开根号后的值，再做一次softmax（谷歌论文中self-attention中的做法）
+
+其他还有哪些方法我后期找找
+
+## attention的更一般形式
 
 ![attention](/img/attention.jpeg ''attention机制'')
 
-attention无序，加上position embedding,
-seq2seq的输出attention是单向的
-self-attention
-multi-head attention
+<Key,Value>为Source，Query为Target。对某个query，首先计算Query和各个Key的相似性（相关性）(方法有点积、向量cos或者MLP等)，得到各个Key对应Value的权重系数，然后对Value进行加权求和，即得到了最终的Attention数值。所以本质上Attention机制是对Source中元素的Value值进行加权求和，而Query和Key用来计算对应Value的权重系数。
 
-如果单看这个问题，attention的表现就比较好了，它可以抛弃位置依赖，获取任意位置token间的关系，没有距离限制
+## Self-Attention
 
-attention的一个好处是可以并行获取全局信息，如果不看position，attention就是一个词袋模型，它的空间复杂度是O(n)
+Self-Attention(自注意力机制)即query=key=value的情况，这时候考虑的是Source或target内部元素间的Attention机制，计算方式和过程跟一般形式的attention是一样的，在此不赘述。
+
+### 问题：
+
+***Self Attention 的作用是什么？Self Attention 能够学习到什么特征？***
+
+很明显，引入Self Attention能够捕捉任意两个词间的关联关系，而不受词间的距离的限制，轻松实现并行，相比RNN通过递归，依次计算序列依赖，对于短文本，问题不大，随着词间距离的增加，捕获词间数据关联性的可能性越小。
+
+***self-attention捕获任意两个词间的关联依赖关系，但是有没有发现忽略了语序关系？***
 
 
-问题：通过Self Attention到底学到了哪些规律或者抽取出了哪些特征呢？或者说引入Self Attention有什么增益或者好处呢？
+如果只看第一个问题，attention的表现就比较好了，它可以抛弃位置依赖，获取任意位置token间的关系，没有距离限制，但是，忽略了词序和位置依赖的attention就是一个词袋模型，它的空间复杂度是O(n)
 
-很明显，引入Self Attention后会更容易捕获句子中长距离的相互依赖的特征，因为如果是RNN或者LSTM，需要依次序序列计算，对于远距离的相互依赖的特征，要经过若干时间步步骤的信息累积才能将两者联系起来，而距离越远，有效捕获的可能性越小。
+于是乎，谷歌论文中还引入了position embedding
 
-但是Self Attention在计算过程中会直接将句子中任意两个单词的联系通过一个计算步骤直接联系起来，所以远距离依赖特征之间的距离被极大缩短，有利于有效地利用这些特征。除此外，Self Attention对于增加计算的并行性也有直接帮助作用。这是为何Self Attention逐渐被广泛使用的主要原因。
+## Multi_Head_Attention
+
+## position embedding
 
 ********************************************************
 
 # 三、transformer
+
+
+
+
+seq2seq的输出attention是单向的
+self-attention
+multi-head attention
+
+
 
 
 对模型结构的解释：
@@ -121,11 +176,66 @@ https://blog.csdn.net/malefactor/article/details/78767781
 
 # 后记
 
-代码实现：
+代码实现：用bilstm+attention实现虚假新闻识别
+[git地址]()
 
-等我几天，我整理一下放上来
+核心代码：
+`
+class Model(nn.Module):
+    def __init__(self, config):
+        super(Model, self).__init__()
+        if config.embedding_pretrained is not None:
+            self.embedding = nn.Embedding.from_pretrained(config.embedding_pretrained, freeze=False)
+        else:
+            self.embedding = nn.Embedding(config.n_vocab, config.embed, padding_idx=config.n_vocab - 1)
+        self.lstm = rnn_encoder(config.embed, config.hidden_size* 2, config.encoder_mode)
+        self.tanh1 = nn.Tanh()
+        self.w = nn.Parameter(torch.Tensor(config.hidden_size * 2))  #value的权值是变化的，用这种方式能够将其融入模型中，使得参数可以在迭代中优化
+        self.tanh2 = nn.Tanh()
+        self.fc1 = nn.Linear(config.hidden_size * 2, config.hidden_size2)
+        self.fc = nn.Linear(config.hidden_size2, config.num_classes)  
+    #
+    def forward(self, x, mask):
+        batch_size, time_step = x.size()
+        emb = self.embedding(x)  # [batch_size, seq_len, embeding]=[128, 32, 300]
+        H = self.lstm(emb,mask).expand(batch_size,time_step,-1)  # [batch_size, seq_len, hidden_size * num_direction]=[128, 32, 256] 中间语义表示c
+        #
+        #开始计算权值
+        M = self.tanh1(H)  # [128, 32, 256] 
+        alpha = F.softmax(torch.matmul(M, self.w), dim=1).unsqueeze(-1)  # matmul输出为[128，32]用unsqueeze 在最后加一个维度    
+        #
+        #计算attention                
+        out = H * alpha  # [128, 32, 256]  alpha为计算的权值  这一步为attention输出
+        #
+        #映射到两个numclass[1为虚假新闻，0为真实新闻]
+        out = torch.sum(out, 1)  # [128, 256] 每个ts 上维度数值相加
+        out = F.relu(out)
+        out = self.fc1(out) # [128, 64]
+        out = self.fc(out)  # [128, 2]
+        return out
+`
 
-
+`self_attention
+#
+def forward(self, Q, K, V, scale=None):
+    '''
+    Args:
+        Q: [batch_size, len_Q, dim_Q]
+        K: [batch_size, len_K, dim_K]
+        V: [batch_size, len_V, dim_V]
+        scale: 缩放因子 论文为根号dim_K  为什么缩放？
+    Return:
+        self-attention后的张量，以及attention张量
+    '''
+    attention = torch.matmul(Q, K.permute(0, 2, 1))  # bt，ts,ts 第一个阶段，计算权重分值
+    if scale:
+        attention = attention * scale   #是否开根号
+    # if mask:  # TODO change this
+    #     attention = attention.masked_fill_(mask == 0, -1e9)
+    attention = F.softmax(attention, dim=-1)  #第二个阶段 先将分值做一次softmax
+    context = torch.matmul(attention, V) # bs，ts,dim_V
+    return context
+`
 
 
 
