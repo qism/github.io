@@ -190,28 +190,22 @@ class Model(nn.Module):
             self.embedding = nn.Embedding(config.n_vocab, config.embed, padding_idx=config.n_vocab - 1)
         self.lstm = rnn_encoder(config.embed, config.hidden_size* 2, config.encoder_mode)
         self.tanh1 = nn.Tanh()
-        self.w = nn.Parameter(torch.Tensor(config.hidden_size * 2))  #value的权值是变化的，用这种方式能够将其融入模型中，使得参数可以在迭代中优化
+        self.w = nn.Parameter(torch.Tensor(config.hidden_size * 2))
         self.tanh2 = nn.Tanh()
         self.fc1 = nn.Linear(config.hidden_size * 2, config.hidden_size2)
         self.fc = nn.Linear(config.hidden_size2, config.num_classes)  
-    #
+    
     def forward(self, x, mask):
         batch_size, time_step = x.size()
-        emb = self.embedding(x)  # [batch_size, seq_len, embeding]=[128, 32, 300]
-        H = self.lstm(emb,mask).expand(batch_size,time_step,-1)  # [batch_size, seq_len, hidden_size * num_direction]=[128, 32, 256] 中间语义表示c
-        #
-        #开始计算权值
-        M = self.tanh1(H)  # [128, 32, 256] 
-        alpha = F.softmax(torch.matmul(M, self.w), dim=1).unsqueeze(-1)  # matmul输出为[128，32]用unsqueeze 在最后加一个维度    
-        #
-        #计算attention                
-        out = H * alpha  # [128, 32, 256]  alpha为计算的权值  这一步为attention输出
-        #
-        #映射到两个numclass[1为虚假新闻，0为真实新闻]
-        out = torch.sum(out, 1)  # [128, 256] 每个ts 上维度数值相加
+        emb = self.embedding(x) 
+        H = self.lstm(emb,mask).expand(batch_size,time_step,-1)  
+        M = self.tanh1(H)  
+        alpha = F.softmax(torch.matmul(M, self.w), dim=1).unsqueeze(-1) 
+        out = H * alpha 
+        out = torch.sum(out, 1) 
         out = F.relu(out)
-        out = self.fc1(out) # [128, 64]
-        out = self.fc(out)  # [128, 2]
+        out = self.fc1(out) 
+        out = self.fc(out) 
         return out
 ```
 
@@ -219,21 +213,28 @@ class Model(nn.Module):
 #
 def forward(self, Q, K, V, scale=None):
     '''
+
     Args:
+
         Q: [batch_size, len_Q, dim_Q]
+
         K: [batch_size, len_K, dim_K]
+
         V: [batch_size, len_V, dim_V]
+
         scale: 缩放因子 论文为根号dim_K  为什么缩放？
+
     Return:
+
         self-attention后的张量，以及attention张量
+
     '''
-    attention = torch.matmul(Q, K.permute(0, 2, 1))  # bt，ts,ts 第一个阶段，计算权重分值
+
+    attention = torch.matmul(Q, K.permute(0, 2, 1))
     if scale:
-        attention = attention * scale   #是否开根号
-    # if mask:  # TODO change this
-    #     attention = attention.masked_fill_(mask == 0, -1e9)
-    attention = F.softmax(attention, dim=-1)  #第二个阶段 先将分值做一次softmax
-    context = torch.matmul(attention, V) # bs，ts,dim_V
+        attention = attention * scale   
+    attention = F.softmax(attention, dim=-1)
+    context = torch.matmul(attention, V)
     return context
 ```
 
