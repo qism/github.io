@@ -93,15 +93,15 @@ Attention（注意力机制）其实是一种通用的思想，可以独立于�
 
 对于上述翻译任务，就有下面这样3个c:
 
-![](http://latex.codecogs.com/gif.latex?c_汤姆=a_(汤姆,Tom)f(h_Tom)+ a_(汤姆,loves)f(h_loves) + a_(汤姆,Jimmy)f(h_Jimmy) )
+![](http://latex.codecogs.com/gif.latex?c_{汤姆}=a_{汤姆,Tom}f(h_{Tom})+ a_{汤姆,loves}f(h_{loves}) + a_{汤姆,Jimmy}f(h_{Jimmy}) )
 
-![](http://latex.codecogs.com/gif.latex?c_爱慕=a_(爱慕,Tom)f(h_Tom)+ a_(爱慕,loves)f(h_loves) + a_(爱慕,Jimmy)f(h_Jimmy) )
+![](http://latex.codecogs.com/gif.latex?c_爱慕=a_{爱慕,Tom}f(h_{Tom})+ a_{爱慕,loves}f(h_{loves}) + a_{爱慕,Jimmy}f(h_{Jimmy}) )
 
-![](http://latex.codecogs.com/gif.latex?c_吉米=a_(吉米,Tom)f(h_Tom)+ a_(吉米,loves)f(h_loves) + a_(吉米,Jimmy)f(h_Jimmy) )
+![](http://latex.codecogs.com/gif.latex?c_{吉米}=a_{吉米,Tom}f(h_{Tom})+ a_{吉米,loves}f(h_{loves}) + a_{吉米,Jimmy}f(h_{Jimmy}) )
 
 也就是
 
-![](http://latex.codecogs.com/gif.latex?c_i=\sum_{j=1}^seq_len
+![](http://latex.codecogs.com/gif.latex?c_i=\sum_{j=1}^{seq_len}
 a_{ij}h_j)
 
 
@@ -111,7 +111,7 @@ source中每个单词的隐层状态与目标单词的前置token的隐层去一
 ***那么问题来了，我们怎么知道这个权重呢？***
 
 
-以下引用张博士的博客内容：**假设编码和解码端都使用RNN,可以用Target输出句子i-1时刻的隐层节点状态去一一和输入句子Source中每个单词对应的RNN隐层节点状态hj进行对比，即通过函数![](http://latex.codecogs.com/gif.latex?F(h_j,H_{i-1}) H_{i-1}为target中前置token的隐状态)来获得目标单词和每个输入单词对应的对齐可能性，这个F函数在不同论文里可能会采取不同的方法，然后函数F的输出经过Softmax进行归一化就得到了符合概率分布取值区间的注意力分配概率分布数值。**
+以下引用张博士的博客内容：**假设编码和解码端都使用RNN,可以用Target输出句子i-1时刻的隐层节点状态去一一和输入句子Source中每个单词对应的RNN隐层节点状态hj进行对比，即通过函数![](http://latex.codecogs.com/gif.latex?F(h_j,H_{i-1}) ),其中，H为target中前置token的隐状态来获得目标单词和每个输入单词对应的对齐可能性，这个F函数在不同论文里可能会采取不同的方法，然后函数F的输出经过Softmax进行归一化就得到了符合概率分布取值区间的注意力分配概率分布数值。**
 
 这个F函数在不同论文里可能会采取不同的方法，我常用的方法就是除以key的维度开根号后的值，再做一次softmax（谷歌论文中self-attention中的做法）
 
@@ -180,7 +180,7 @@ https://blog.csdn.net/malefactor/article/details/78767781
 [git地址]()
 
 核心代码：
-`
+```python
 class Model(nn.Module):
     def __init__(self, config):
         super(Model, self).__init__()
@@ -213,9 +213,9 @@ class Model(nn.Module):
         out = self.fc1(out) # [128, 64]
         out = self.fc(out)  # [128, 2]
         return out
-`
+```
 
-`self_attention
+```python
 #
 def forward(self, Q, K, V, scale=None):
     '''
@@ -235,7 +235,7 @@ def forward(self, Q, K, V, scale=None):
     attention = F.softmax(attention, dim=-1)  #第二个阶段 先将分值做一次softmax
     context = torch.matmul(attention, V) # bs，ts,dim_V
     return context
-`
+```
 
 
 
