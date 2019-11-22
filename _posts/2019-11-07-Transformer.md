@@ -70,20 +70,16 @@ Decoder中的self attention不同于Encoder的self attention，在Decoder中，s
 
 ## layer-normalization
 
+归一化数据的一种方式，在每一个样本上计算均值和方差，而不是BN那种在批方向计算均值和方差！
 
-
-encode
+## 总结
 
 transformer只依赖attention机制，获取输入和输出间的全局依赖，能够更好地实现并行，在翻译任务上表现好于之前的模型
 
+seq2seq的输入是双向的，输出attention是单向的
 
-seq2seq的输出attention是单向的
-self-attention
-multi-head attention
+# 代码实现
 
-
-
-# 代码
 ```python
 import torch
 import torch.nn as nn

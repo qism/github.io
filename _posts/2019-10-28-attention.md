@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      attention is all you need
-subtitle:   Google 论文 《attention is all you need》
+title:      Attention
+subtitle:   自注意力机制
 date:       2019-10-28
 author:     qism
 header-img: img/post-bg-coffee.jpeg
@@ -10,7 +10,6 @@ tags:
         - NLP
         - Deep Learing
         - attention
-        - transformer
 ---
 
 # 前序
@@ -127,6 +126,12 @@ source中每个单词的隐层状态与目标单词的前置token的隐层去一
 
 Self-Attention(自注意力机制)即query=key=value的情况，这时候考虑的是Source或target内部元素间的Attention机制，计算方式和过程跟一般形式的attention是一样的，在此不赘述。
 
+
+## Multi_Head_Attention
+
+
+
+
 ### 问题：
 
 ***Self Attention 的作用是什么？Self Attention 能够学习到什么特征？***
@@ -135,36 +140,14 @@ Self-Attention(自注意力机制)即query=key=value的情况，这时候考虑�
 
 ***self-attention捕获任意两个词间的关联依赖关系，但是有没有发现忽略了语序关系？***
 
-
 如果只看第一个问题，attention的表现就比较好了，它可以抛弃位置依赖，获取任意位置token间的关系，没有距离限制，但是，忽略了词序和位置依赖的attention就是一个词袋模型，它的空间复杂度是O(n)
 
 于是乎，谷歌论文中还引入了position embedding
 
-## Multi_Head_Attention
-
 ## position embedding
 
+
 ********************************************************
-
-# 三、transformer
-
-
-
-
-seq2seq的输出attention是单向的
-self-attention
-multi-head attention
-
-
-
-
-对模型结构的解释：
-
-encoder
-6层，每一层还有2个子层
-decoder 
-
-transformer只依赖attention机制，获取输入和输出间的全局依赖，能够更好地实现并行，在翻译任务上表现好于之前的模型
 
 
 参考
